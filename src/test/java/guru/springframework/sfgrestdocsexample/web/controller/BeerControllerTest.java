@@ -49,7 +49,7 @@ class BeerControllerTest {
         given(beerRepository.findById(any())).willReturn(Optional.of(Beer.builder().build()));
 
         mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString())
-                .param("iscold", "yes")
+                .param("iswarm", "yes")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("v1/beer",
@@ -57,7 +57,7 @@ class BeerControllerTest {
                                 parameterWithName("beerId").description("UUID of desired beer to get.")
                         ),
                         requestParameters(
-                                parameterWithName("iscold").description("Is Beer Cold Query param")
+                                parameterWithName("iswarm").description("Is Beer warm Query param")
                         )));
     }
 
