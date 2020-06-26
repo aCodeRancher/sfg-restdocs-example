@@ -1,5 +1,6 @@
 package guru.springframework.sfgrestdocsexample.web.controller;
 
+import guru.springframework.sfgrestdocsexample.domain.Beer;
 import guru.springframework.sfgrestdocsexample.repositories.BeerRepository;
 import guru.springframework.sfgrestdocsexample.web.mappers.BeerMapper;
 import guru.springframework.sfgrestdocsexample.web.model.BeerDto;
@@ -22,6 +23,12 @@ public class BeerController {
     private final BeerMapper beerMapper;
     private final BeerRepository beerRepository;
 
+
+    @GetMapping("/list/{any}")
+    public ResponseEntity<Iterable<Beer>> getBeers(@PathVariable("any") String any){
+
+        return new ResponseEntity<>(beerRepository.findAll(), HttpStatus.OK);
+    }
     @GetMapping("/{beerId}")
     public ResponseEntity<BeerDto> getBeerById(@PathVariable("beerId") UUID beerId){
 
