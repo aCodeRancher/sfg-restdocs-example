@@ -17,6 +17,8 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,6 +49,68 @@ class BeerControllerTest {
     BeerRepository beerRepository;
 
     @Test
+    void getBeers() throws Exception {
+        List<Beer> beers = new ArrayList<>();
+        Beer beerInventory = Beer.builder()
+                .id(UUID.randomUUID())
+                .version(1L)
+                .beerName("Mango Bobs")
+                .beerStyle("IPA")
+                .quantityToBrew(200)
+                .minOnHand(12)
+                .upc(337010000001L)
+                .price(new BigDecimal("12.95"))
+                .build();
+        Beer beerInventory1 = Beer.builder()
+                .id(UUID.randomUUID())
+                .version(1L)
+                .beerName("Galaxy Cat")
+                .beerStyle("PALE_ALE")
+                .quantityToBrew(200)
+                .minOnHand(12)
+                .upc(337010000002L)
+                .price(new BigDecimal("11.95"))
+                .build();
+         beers.add(beerInventory);
+         beers.add(beerInventory1);
+        given(beerRepository.findAll()).willReturn(beers);
+
+        mockMvc.perform(get("/api/v1/beer/list/{any}","all")
+                .param("iscold", "yes")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("v2/beer",
+                        pathParameters (
+                                parameterWithName("any").description("get any beer inventory.")
+                        ),
+                        requestParameters(
+                                parameterWithName("iscold").description("Is Beer Cold Query param")
+                        ),
+                        responseFields(
+                                fieldWithPath("[0].id").description("Id of Beer"),
+                                fieldWithPath("[0].version").description("Version number"),
+                                fieldWithPath("[0].createdDate").description("Date Created"),
+                                fieldWithPath("[0].lastModifiedDate").description("Date Updated"),
+                                fieldWithPath("[0].beerName").description("Beer Name"),
+                                fieldWithPath("[0].beerStyle").description("Beer Style"),
+                                fieldWithPath("[0].upc").description("UPC of Beer"),
+                                fieldWithPath("[0].price").description("Price"),
+                                fieldWithPath("[0].minOnHand").description("Min on Hand"),
+                                fieldWithPath("[0].quantityToBrew").description("quantity to brew"),
+                                fieldWithPath("[1].id").description("Id of Beer"),
+                                fieldWithPath("[1].version").description("Version number"),
+                                fieldWithPath("[1].createdDate").description("Date Created"),
+                                fieldWithPath("[1].lastModifiedDate").description("Date Updated"),
+                                fieldWithPath("[1].beerName").description("Beer Name"),
+                                fieldWithPath("[1].beerStyle").description("Beer Style"),
+                                fieldWithPath("[1].upc").description("UPC of Beer"),
+                                fieldWithPath("[1].price").description("Price"),
+                                fieldWithPath("[1].minOnHand").description("Min on Hand"),
+                                fieldWithPath("[1].quantityToBrew").description("quantity to brew")
+                        )
+                        ));
+    }
+    @Test
     void getBeerById() throws Exception {
         given(beerRepository.findById(any())).willReturn(Optional.of(Beer.builder().build()));
 
@@ -70,7 +134,7 @@ class BeerControllerTest {
                                 fieldWithPath("beerStyle").description("Beer Style"),
                                 fieldWithPath("upc").description("UPC of Beer"),
                                 fieldWithPath("price").description("Price"),
-                                fieldWithPath("quantityOnHand").description("Quantity On hand")
+                                fieldWithPath("quantityToBrew").description("Quantity On hand")
                         )));
     }
 
